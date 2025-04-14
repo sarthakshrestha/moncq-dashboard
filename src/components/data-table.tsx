@@ -836,31 +836,67 @@ export function ProductDataTable() {
       </div>
 
       {/* NEW: Category tabs instead of dropdown */}
+      {/* Responsive Category Filter */}
       <div className="px-4 lg:px-6 max-w-3xl flex-col justify-end">
         <div className="text-xs text-muted-foreground mb-1">
           Filter by Category
         </div>
-        <Tabs
-          value={selectedCategory}
-          onValueChange={(value) => {
-            console.log(
-              "Category tab changed from",
-              selectedCategory,
-              "to",
-              value
-            );
-            setSelectedCategory(value);
-          }}
-        >
-          <TabsList className="w-full justify-start flex-wrap">
-            <TabsTrigger value="all">All Categories</TabsTrigger>
-            {categories.map((category) => (
-              <TabsTrigger key={category} value={category}>
-                {category}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+
+        {/* Use isMobile hook to conditionally render different UI */}
+        {useIsMobile() ? (
+          <Select
+            value={selectedCategory}
+            onValueChange={(value) => {
+              console.log(
+                "Category select changed from",
+                selectedCategory,
+                "to",
+                value
+              );
+              setSelectedCategory(value);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={
+                  selectedCategory === "all"
+                    ? "All Categories"
+                    : selectedCategory
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(value) => {
+              console.log(
+                "Category tab changed from",
+                selectedCategory,
+                "to",
+                value
+              );
+              setSelectedCategory(value);
+            }}
+          >
+            <TabsList className="w-full justify-start flex-wrap">
+              <TabsTrigger value="all">All Categories</TabsTrigger>
+              {categories.map((category) => (
+                <TabsTrigger key={category} value={category}>
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        )}
       </div>
 
       {/* Category Metrics Visualization with console logs */}
