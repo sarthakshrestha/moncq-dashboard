@@ -1,0 +1,31 @@
+product_id,name,category,color,size_available,price,Currency,stock,release_date
+1,Oversized Accessories,Sweatshirts,Persian Pink,"['S', 'XL', 'M', 'L', 'XS']", $126.30 ,AUD,114,6/15/2024
+2,Oversized Hoodies,Hoodies,Beige,"['M', 'L', 'S', 'XL', 'XS']", $114.06 ,AUD,175,3/4/2025
+3,Oversized Hoodies,Lounge Pants,Beige,"['XS', 'S', 'XL', 'M']", $98.98 ,AUD,45,10/10/2024
+4,Fitted Sweatshirts,Jackets,Medium Slate Blue,"['XS', 'L', 'M']", $50.76 ,AUD,176,4/4/2025
+5,Classic Hoodies,Hoodies,Pale Azure,"['L', 'XL', 'S']", $63.50 ,AUD,112,5/31/2024
+6,Oversized Sweatshirts,Lounge Pants,Emerald,"['M', 'L', 'S', 'XL', 'XS']", $57.02 ,AUD,85,12/9/2024
+7,Oversized Hoodies,Accessories,Beige,"['M', 'XS']", $45.51 ,AUD,132,11/5/2024
+8,Classic Accessories,Sweatshirts,Emerald,"['S', 'XS']", $105.44 ,AUD,182,4/22/2024
+9,Oversized Lounge Pants,Hoodies,Black,"['XL', 'XS', 'M']", $49.01 ,AUD,178,3/30/2025
+10,Classic Accessories,Accessories,Persian Pink,"['S', 'M', 'XS', 'XL']", $83.53 ,AUD,181,9/12/2024
+11,Classic Jackets,Lounge Pants,Persian Pink,"['XS', 'L']", $108.32 ,AUD,154,11/27/2024
+12,Oversized Hoodies,Accessories,Pale Azure,"['S', 'M', 'XS', 'L']", $80.64 ,AUD,50,11/17/2024
+13,Fitted Accessories,Jackets,Black,"['XL', 'M']", $142.48 ,AUD,36,12/25/2024
+14,Oversized Jackets,Hoodies,Emerald,"['M', 'XL', 'L']", $63.16 ,AUD,97,4/22/2024
+15,Oversized Jackets,Accessories,Medium Slate Blue,"['XS', 'XL', 'M', 'S']", $131.22 ,AUD,21,5/14/2024
+16,Oversized Jackets,Sweatshirts,Beige,"['S', 'L', 'M', 'XL']", $101.69 ,AUD,38,12/17/2024
+17,Oversized Sweatshirts,Accessories,Emerald,"['XL', 'S', 'L', 'XS']", $44.59 ,AUD,103,9/25/2024
+18,Oversized Jackets,Sweatshirts,Beige,"['XS', 'M', 'L']", $137.24 ,AUD,114,6/3/2024
+19,Classic Sweatshirts,Sweatshirts,Pale Azure,"['L', 'XS', 'XL']", $121.01 ,AUD,95,3/14/2025
+20,Fitted Sweatshirts,Jackets,Pale Azure,"['L', 'XS']", $134.44 ,AUD,66,10/8/2024
+21,Oversized Lounge Pants,Jackets,Persian Pink,"['S', 'XS', 'M']", $61.23 ,AUD,94,6/21/2024
+22,Fitted Hoodies,Jackets,Persian Pink,"['XL', 'M', 'XS', 'L', 'S']", $59.63 ,AUD,77,5/1/2024
+23,Oversized Hoodies,Accessories,Medium Slate Blue,"['M', 'L', 'XL', 'XS']", $82.36 ,AUD,157,7/22/2024
+24,Oversized Jackets,Hoodies,Beige,"['XS', 'S', 'L', 'M', 'XL']", $144.37 ,AUD,94,9/6/2024
+25,Classic Jackets,Hoodies,Beige,"['XL', 'M', 'L', 'S']", $75.87 ,AUD,188,8/17/2024
+26,Fitted Accessories,Sweatshirts,Pale Azure,"['L', 'S', 'M', 'XL', 'XS']", $100.26 ,AUD,10,7/3/2024
+27,Fitted Jackets,Sweatshirts,Medium Slate Blue,"['L', 'XL', 'S', 'XS']", $96.22 ,AUD,198,10/5/2024
+28,Oversized Hoodies,Jackets,Black,"['XS', 'S', 'M', 'L']", $64.70 ,AUD,60,8/16/2024
+29,Oversized Hoodies,Hoodies,Pale Azure,"['XL', 'XS', 'S', 'M', 'L']", $119.01 ,AUD,108,8/21/2024
+30,Fitted Lounge Pants,Sweatshirts,Pale Azure,"['XS', 'L']", $64.06 ,AUD,188,2/1/2025
