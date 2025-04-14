@@ -239,7 +239,7 @@ const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "price",
-    header: () => <div className="w-full text-right">Price</div>,
+    header: () => <div className="w-full text-right">Price (AUD)</div>,
     cell: ({ row }) => (
       <div className="text-right font-medium">
         {formatPrice(row.original.price, row.original.Currency)}
