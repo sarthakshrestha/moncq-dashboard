@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Avatar } from "./ui/avatar";
 import {
   IconDashboard,
   IconShirt,
@@ -38,7 +39,7 @@ const data = {
   user: {
     name: "Moncq Administrator",
     email: "admin@moncq.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/avatars/moncq.jpeg",
   },
   navMain: [
     {
@@ -151,8 +152,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="/">
-                <span className="text-base font-semibold">MONCQ</span>
+              <a href="/" className="flex items-center gap-2">
+                <Avatar>
+                  <img
+                    src="/avatars/moncq.jpeg"
+                    alt="Moncq Logo"
+                    className="h-full w-full object-cover"
+                  />
+                </Avatar>
+                <span className="text-base font-semibold">Moncq</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

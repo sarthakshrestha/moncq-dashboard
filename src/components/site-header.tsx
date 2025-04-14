@@ -24,7 +24,7 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">MONCQ Dashboard</h1>
+        <h1 className="text-base font-medium">Moncq Dashboard</h1>
         <div className="ml-auto flex items-center gap-2">
           {/* Theme toggle button */}
           <Button
@@ -50,7 +50,7 @@ export function SiteHeader() {
             ) : (
               /* Placeholder with same dimensions for initial render */
               <div className="h-5 w-5" />
-          )}
+            )}
             <span className="sr-only">Toggle theme</span>
           </Button>
 

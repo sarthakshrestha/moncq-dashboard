@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Moncq Dashboard",
-  description: "Moncq analytics and management dashboard",
+  description: "Moncq Admin Dashboard",
 };
 
 export default function RootLayout({
