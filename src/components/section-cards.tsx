@@ -146,7 +146,7 @@ export function SectionCards() {
         <CardFooter className="flex items-center justify-between pb-5 pt-2">
           <Badge
             variant="outline"
-            className="font-normal bg-chart-3/5 text-primary"
+            className="font-semibold bg-chart-3/5 text-primary"
           >
             {isLoading ? "Calculating..." : "Current Stock Value"}
           </Badge>
