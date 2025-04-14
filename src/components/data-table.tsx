@@ -857,7 +857,7 @@ export function ProductDataTable() {
               setSelectedCategory(value);
             }}
           >
-            <SelectTrigger className="w-full border-2 dark:border-slate-700 dark:bg-slate-900/70 dark:text-white shadow-sm">
+            <SelectTrigger className="w-full border-2 dark:border-zinc-900 dark:bg-zinc-900/70 dark:text-white shadow-sm">
               <SelectValue
                 placeholder={
                   selectedCategory === "all"
@@ -867,15 +867,15 @@ export function ProductDataTable() {
                 className="font-medium"
               />
             </SelectTrigger>
-            <SelectContent className="dark:bg-slate-900 dark:border-slate-700">
-              <SelectItem value="all" className="dark:focus:bg-slate-800">
+            <SelectContent className="dark:bg-zinc-900 dark:border-zinc-900">
+              <SelectItem value="all" className="dark:focus:bg-zinc-900">
                 All Categories
               </SelectItem>
               {categories.map((category) => (
                 <SelectItem
                   key={category}
                   value={category}
-                  className="dark:focus:bg-slate-800"
+                  className="dark:focus:bg-zinc-900"
                 >
                   {category}
                 </SelectItem>
