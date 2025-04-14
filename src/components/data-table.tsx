@@ -34,6 +34,8 @@ import {
   IconSearch,
   IconTag,
   IconTrendingUp,
+  IconChartBar,
+  IconDatabase,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -50,7 +52,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip as RechartsTooltip,
+} from "recharts";
 import { toast } from "sonner";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -100,12 +112,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   parseProductsCSV,
   type Product,
   getSalesByCategory,
 } from "@/utils/papaparse-util";
+
+// Import utility functions from the new table-util.ts file
+import {
+  formatPrice,
+  parseSizes,
+  getColorHex,
+  handleEdit,
+  handleAdjustStock,
+  handlePromote,
+  handleDelete,
+  getProductSalesData,
+  getAvailableCategories,
+  getCategoryMetrics,
+} from "@/utils/table-util";
 
 // Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
@@ -125,25 +158,6 @@ function DragHandle({ id }: { id: number }) {
       <span className="sr-only">Drag to reorder</span>
     </Button>
   );
-}
-
-// Function to format price with currency
-function formatPrice(price: string, currency: string): string {
-  const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
-  return new Intl.NumberFormat("en-AU", {
-    style: "currency",
-    currency: currency || "AUD",
-  }).format(numericPrice);
-}
-
-// Parse available sizes from string to array
-function parseSizes(sizesStr: string): string[] {
-  try {
-    // Remove brackets and single quotes, then split by commas
-    return sizesStr.replace(/[\[\]']/g, "").split(", ");
-  } catch (e) {
-    return [];
-  }
 }
 
 const columns: ColumnDef<Product>[] = [
@@ -324,45 +338,6 @@ const columns: ColumnDef<Product>[] = [
   },
 ];
 
-// Helper functions for action handlers
-function handleEdit(product: Product) {
-  toast.info(`Editing ${product.name}`, {
-    description: "This would open an edit form.",
-  });
-}
-
-function handleAdjustStock(product: Product) {
-  toast.info(`Adjusting stock for ${product.name}`, {
-    description: "Stock management modal would open here.",
-  });
-}
-
-function handlePromote(product: Product) {
-  toast.success(`${product.name} added to promotions`, {
-    description: "Product will be featured in promotional materials.",
-  });
-}
-
-function handleDelete(product: Product) {
-  toast.error(`Deleting ${product.name}`, {
-    description: "This would prompt for confirmation.",
-  });
-}
-
-// Helper function to get a hex color from color name
-function getColorHex(colorName: string): string {
-  const colorMap: Record<string, string> = {
-    "Persian Pink": "#F77FBE",
-    Beige: "#F5F5DC",
-    "Medium Slate Blue": "#7B68EE",
-    "Pale Azure": "#77C3EC",
-    Emerald: "#50C878",
-    Black: "#000000",
-  };
-
-  return colorMap[colorName] || "#CCCCCC";
-}
-
 function DraggableRow({ row }: { row: Row<Product> }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.product_id,
@@ -387,27 +362,6 @@ function DraggableRow({ row }: { row: Row<Product> }) {
     </TableRow>
   );
 }
-
-// Sales data for mini chart in product details
-const getProductSalesData = (product: Product) => {
-  // This would normally come from API, we're generating mock data
-  const now = new Date();
-  const months = Array.from({ length: 6 }, (_, i) => {
-    const month = new Date(now);
-    month.setMonth(month.getMonth() - (5 - i));
-    return month.toLocaleDateString("en-US", { month: "short" });
-  });
-
-  // Generate random but sensible sales data based on current stock
-  const baseStock = product.stock / 6;
-  const sales = months.map((month) => ({
-    month,
-    sales: Math.floor(baseStock * 0.8 + Math.random() * baseStock * 0.4),
-    returns: Math.floor(baseStock * 0.05 + Math.random() * baseStock * 0.1),
-  }));
-
-  return sales;
-};
 
 const chartConfig = {
   sales: {
@@ -670,6 +624,15 @@ export function ProductDataTable() {
   const [selectedCollection, setSelectedCollection] =
     React.useState<string>("all");
 
+  // New state variables for category filtering and metrics
+  const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
+  const [categories, setCategories] = React.useState<string[]>([]);
+  const [metricType, setMetricType] = React.useState<
+    "stock" | "revenue" | "count"
+  >("stock");
+  const [categoryMetrics, setCategoryMetrics] = React.useState<any[]>([]);
+  const [showCategoryMetrics, setShowCategoryMetrics] = React.useState(false);
+
   const sortableId = React.useId();
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -683,7 +646,17 @@ export function ProductDataTable() {
       try {
         setIsLoading(true);
         const products = await parseProductsCSV();
+        console.log("Loaded products:", products.length);
         setData(products);
+
+        // Extract available categories
+        const availableCategories = getAvailableCategories(products);
+        console.log("Available categories:", availableCategories);
+        setCategories(availableCategories);
+
+        // Calculate metrics for the categories
+        const metrics = getCategoryMetrics(products);
+        setCategoryMetrics(metrics);
       } catch (error) {
         console.error("Error loading product data:", error);
         toast.error("Failed to load product data");
@@ -695,14 +668,45 @@ export function ProductDataTable() {
     loadData();
   }, []);
 
-  // Filter by collection (based on product name prefix)
-  const filteredData = React.useMemo(() => {
-    if (selectedCollection === "all") return data;
+  // Update category metrics when data changes
+  React.useEffect(() => {
+    if (data.length > 0) {
+      console.log("Updating category metrics based on data changes");
+      setCategoryMetrics(getCategoryMetrics(data));
+    }
+  }, [data]);
 
-    return data.filter((product) =>
-      product.name.toLowerCase().startsWith(selectedCollection.toLowerCase())
-    );
-  }, [data, selectedCollection]);
+  // Create table instance before using it in effects
+  const filteredData = React.useMemo(() => {
+    console.log("Filtering data:");
+    console.log("- Collection:", selectedCollection);
+    console.log("- Category:", selectedCategory);
+    console.log("- Starting with", data.length, "products");
+
+    let filtered = data;
+
+    // Filter by collection (based on product name prefix)
+    if (selectedCollection !== "all") {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().startsWith(selectedCollection.toLowerCase())
+      );
+      console.log(
+        "After collection filter:",
+        filtered.length,
+        "products remain"
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (product) => product.category === selectedCategory
+      );
+      console.log("After category filter:", filtered.length, "products remain");
+    }
+
+    return filtered;
+  }, [data, selectedCollection, selectedCategory]);
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => filteredData?.map(({ product_id }) => product_id) || [],
@@ -722,6 +726,7 @@ export function ProductDataTable() {
     },
     getRowId: (row) => row.product_id.toString(),
     enableRowSelection: true,
+    enableFilters: true, // Enable filtering explicitly
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -735,6 +740,59 @@ export function ProductDataTable() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+
+  // Apply category filter directly to the table when category changes
+  React.useEffect(() => {
+    console.log("Selected category changed to:", selectedCategory);
+
+    if (table) {
+      if (selectedCategory !== "all") {
+        console.log("Setting category column filter to:", selectedCategory);
+
+        // Method 1: Update through column filters state
+        setColumnFilters((prev) => {
+          const filtered = prev.filter((filter) => filter.id !== "category");
+          console.log("Adding category filter to column filters");
+          return [...filtered, { id: "category", value: selectedCategory }];
+        });
+
+        // Method 2: Direct column API
+        const categoryColumn = table.getColumn("category");
+        if (categoryColumn) {
+          categoryColumn.setFilterValue(selectedCategory);
+          console.log("Filter applied directly to category column");
+        } else {
+          console.log("Category column not found in table");
+        }
+      } else {
+        console.log("Clearing category filter");
+
+        // Remove from column filters state
+        setColumnFilters((prev) => {
+          const filtered = prev.filter((filter) => filter.id !== "category");
+          console.log("Removed category filter from column filters");
+          return filtered;
+        });
+
+        // Clear via column API
+        const categoryColumn = table.getColumn("category");
+        if (categoryColumn) {
+          categoryColumn.setFilterValue(undefined);
+          console.log("Category column filter cleared");
+        }
+      }
+    }
+  }, [selectedCategory, table]);
+
+  // Log when collection changes
+  React.useEffect(() => {
+    console.log("Selected collection changed to:", selectedCollection);
+  }, [selectedCollection]);
+
+  // Log when metrics visibility changes
+  React.useEffect(() => {
+    console.log("Category metrics visibility changed to:", showCategoryMetrics);
+  }, [showCategoryMetrics]);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -750,8 +808,11 @@ export function ProductDataTable() {
   return (
     <Tabs
       defaultValue="all"
-      className="w-full flex-col justify-start gap-6"
-      onValueChange={setSelectedCollection}
+      className="w-full flex-col justify-start gap-4"
+      onValueChange={(value) => {
+        console.log("Collection tab changed to:", value);
+        setSelectedCollection(value);
+      }}
     >
       <div className="flex items-center justify-between px-4 lg:px-6">
         <div className="flex items-center gap-4">
@@ -765,18 +826,172 @@ export function ProductDataTable() {
               placeholder="Search products..."
               className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-[300px]"
               value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
+              onChange={(e) => {
+                console.log("Global search changed:", e.target.value);
+                setGlobalFilter(e.target.value);
+              }}
             />
           </div>
         </div>
 
-        <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 hidden **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
-          <TabsTrigger value="all">All Collections</TabsTrigger>
-          <TabsTrigger value="oversized">Oversized</TabsTrigger>
-          <TabsTrigger value="fitted">Fitted</TabsTrigger>
-          <TabsTrigger value="classic">Classic</TabsTrigger>
-        </TabsList>
+        <div className="flex items-center gap-3">
+          {/* Toggle Category Metrics Visualization with console logs */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden md:flex"
+            onClick={() => {
+              console.log(
+                "Toggling metrics visibility from",
+                showCategoryMetrics,
+                "to",
+                !showCategoryMetrics
+              );
+              setShowCategoryMetrics(!showCategoryMetrics);
+            }}
+          >
+            <IconChartBar className="mr-1 h-4 w-4" />
+            {showCategoryMetrics ? "Hide Metrics" : "Show Metrics"}
+          </Button>
+
+          {/* Collection Tabs */}
+          <div className="space-y-1">
+            <div className="text-xs text-muted-foreground hidden md:block">
+              Collections
+            </div>
+            <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
+              <TabsTrigger value="all">All Collections</TabsTrigger>
+              <TabsTrigger value="oversized">Oversized</TabsTrigger>
+              <TabsTrigger value="fitted">Fitted</TabsTrigger>
+              <TabsTrigger value="classic">Classic</TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
       </div>
+
+      {/* NEW: Category tabs instead of dropdown */}
+      <div className="px-4 lg:px-6">
+        <div className="text-xs text-muted-foreground mb-1">
+          Filter by Category
+        </div>
+        <Tabs
+          value={selectedCategory}
+          onValueChange={(value) => {
+            console.log(
+              "Category tab changed from",
+              selectedCategory,
+              "to",
+              value
+            );
+            setSelectedCategory(value);
+          }}
+        >
+          <TabsList className="w-full justify-start flex-wrap">
+            <TabsTrigger value="all">All Categories</TabsTrigger>
+            {categories.map((category) => (
+              <TabsTrigger key={category} value={category}>
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Category Metrics Visualization with console logs */}
+      {showCategoryMetrics && (
+        <div className="px-4 lg:px-6">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-medium">
+                    Sales by Category
+                  </CardTitle>
+                  <CardDescription>
+                    {metricType === "stock"
+                      ? "Stock levels by product category"
+                      : metricType === "revenue"
+                      ? "Revenue breakdown by category"
+                      : "Number of products by category"}
+                  </CardDescription>
+                </div>
+                <Select
+                  value={metricType}
+                  onValueChange={(value: any) => {
+                    console.log("Metrics type changed to:", value);
+                    setMetricType(value);
+                  }}
+                >
+                  <SelectTrigger className="w-[130px]">
+                    <SelectValue placeholder="Select metric" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stock">Stock Levels</SelectItem>
+                    <SelectItem value="revenue">Revenue</SelectItem>
+                    <SelectItem value="count">Product Count</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="h-[220px]">
+                <BarChart
+                  data={categoryMetrics}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    strokeOpacity={0.3}
+                  />
+                  <XAxis
+                    dataKey="category"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => {
+                      if (metricType === "revenue") {
+                        return value >= 1000
+                          ? `$${Math.round(value / 1000)}k`
+                          : `$${value}`;
+                      }
+                      return value;
+                    }}
+                  />
+                  <RechartsTooltip
+                    formatter={(value: any) => {
+                      if (metricType === "revenue") {
+                        return [`$${value.toLocaleString()}`, "Revenue"];
+                      }
+                      return [
+                        value.toLocaleString(),
+                        metricType === "stock" ? "Stock" : "Products",
+                      ];
+                    }}
+                    labelFormatter={(label) => `Category: ${label}`}
+                  />
+                  <Bar
+                    dataKey={metricType}
+                    fill="var(--chart-3)"
+                    radius={[4, 4, 0, 0]}
+                    name={
+                      metricType === "stock"
+                        ? "Stock"
+                        : metricType === "revenue"
+                        ? "Revenue"
+                        : "Products"
+                    }
+                  />
+                </BarChart>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <TabsContent
         value="all"
@@ -853,6 +1068,7 @@ export function ProductDataTable() {
               <Select
                 value={`${table.getState().pagination.pageSize}`}
                 onValueChange={(value) => {
+                  console.log("Page size changed to:", value);
                   table.setPageSize(Number(value));
                 }}
               >

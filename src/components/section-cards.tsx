@@ -7,6 +7,10 @@ import {
   IconShirt,
   IconHanger,
   IconColorSwatch,
+  IconChevronUp,
+  IconInfoCircle,
+  IconCircleCheck,
+  IconAlertTriangle,
 } from "@tabler/icons-react";
 
 import {
@@ -17,6 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   parseProductsCSV,
@@ -25,6 +36,7 @@ import {
   getSalesByCategory,
   getAveragePriceByColor,
 } from "@/utils/papaparse-util";
+import { cn } from "@/lib/utils";
 
 export function SectionCards() {
   const [revenue, setRevenue] = useState(0);
@@ -65,35 +77,90 @@ export function SectionCards() {
     loadData();
   }, []);
 
+  // Get status badge variant based on stock level
+  const getStockBadgeVariant = (stock: any) => {
+    if (stock >= 100) return "secondary";
+    if (stock >= 50) return "secondary";
+    return "destructive";
+  };
+
+  // Get badge classes based on stock level
+  const getStockBadgeClasses = (stock: any) => {
+    if (stock >= 100) {
+      return "bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400";
+    }
+    if (stock >= 50) {
+      return "bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:bg-amber-500/15 dark:text-amber-400";
+    }
+    return "";
+  };
+
+  // Get status icon based on stock level
+  const getStockStatusIcon = (stock) => {
+    if (stock >= 100) return <IconCircleCheck className="size-3.5 mr-1" />;
+    if (stock >= 50) return <IconAlertTriangle className="size-3.5 mr-1" />;
+    return <IconAlertTriangle className="size-3.5 mr-1" />;
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 px-8 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       {/* Revenue Card */}
       <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-primary/2 to-white shadow-sm shadow-primary/5 dark:from-primary/3 dark:to-card dark:shadow-primary/3">
         <CardHeader className="pb-0 pt-5">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-sm font-medium text-primary">
+            <CardDescription className="text-sm font-medium text-primary flex items-center gap-1.5">
               Total Revenue
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Total potential revenue based on current stock</p>
+                </TooltipContent>
+              </Tooltip>
             </CardDescription>
             <div className="rounded-full bg-accent p-2 text-primary">
               <IconCashBanknote className="size-6" stroke={2} />
             </div>
           </div>
           <CardTitle className="mt-2 text-3xl font-semibold tabular-nums tracking-tight">
-            {isLoading
-              ? "Loading..."
-              : `$${revenue.toLocaleString("en-US", {
-                  maximumFractionDigits: 0,
-                })}`}
+            {isLoading ? (
+              <span className="animate-pulse">Loading...</span>
+            ) : (
+              <span
+                className={cn(
+                  "text-4xl font-bold",
+                  revenue >= 10000 && "text-emerald-700 dark:text-emerald-400",
+                  revenue >= 5000 &&
+                    revenue < 10000 &&
+                    "text-amber-700 dark:text-amber-400",
+                  revenue < 5000 && "text-destructive"
+                )}
+              >
+                ${revenue.toLocaleString("en-US", { maximumFractionDigits: 0 })}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between pb-5 pt-4">
-          <div className="text-sm text-primary">
-            {isLoading ? "Calculating..." : "Based on current stock"}
-          </div>
-          <div className="flex items-center gap-1 text-sm font-medium text-primary">
-            <IconTrendingUp className="size-4" />
-            <span>+8.3%</span>
-          </div>
+        <Separator className="my-2" />
+        <CardFooter className="flex items-center justify-between pb-5 pt-2">
+          <Badge variant="outline" className="font-normal text-primary">
+            {isLoading ? "Calculating..." : "Current Stock Value"}
+          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400"
+              >
+                <IconChevronUp className="size-3 mr-1" />
+                8.3%
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Increase from last month</p>
+            </TooltipContent>
+          </Tooltip>
         </CardFooter>
       </Card>
 
@@ -101,81 +168,182 @@ export function SectionCards() {
       <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-primary/2 to-white shadow-sm shadow-primary/5 dark:from-primary/3 dark:to-card dark:shadow-primary/3">
         <CardHeader className="pb-0 pt-5">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-sm font-medium text-primary">
+            <CardDescription className="text-sm font-medium text-primary flex items-center gap-1.5">
               Top Selling Product
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Product with highest stock level</p>
+                </TooltipContent>
+              </Tooltip>
             </CardDescription>
             <div className="rounded-full bg-accent p-2 text-primary">
               <IconShirt className="size-6" stroke={2} />
             </div>
           </div>
-          <CardTitle className="mt-2 line-clamp-1 text-3xl font-semibold tracking-tight">
-            {isLoading ? "Loading..." : topProduct.name}
+          <CardTitle className="mt-2 line-clamp-1 text-3xl font-semibold tracking-tight group">
+            <Tooltip>
+              <TooltipTrigger className="cursor-default">
+                {isLoading ? (
+                  <span className="animate-pulse">Loading...</span>
+                ) : (
+                  topProduct.name
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{topProduct.name}</p>
+              </TooltipContent>
+            </Tooltip>
           </CardTitle>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between pb-5 pt-4">
-          <div className="text-sm text-primary">
-            {isLoading ? "Analyzing..." : `${topProduct.stock} units in stock`}
+        <Separator className="my-2" />
+        <CardFooter className="flex items-center justify-between pb-5 pt-2">
+          <div className="flex items-center gap-2">
+            {!isLoading && (
+              <Badge
+                variant={getStockBadgeVariant(topProduct.stock)}
+                className={cn(
+                  "font-mono",
+                  getStockBadgeClasses(topProduct.stock)
+                )}
+              >
+                {getStockStatusIcon(topProduct.stock)}
+                {topProduct.stock} units
+              </Badge>
+            )}
           </div>
-          <div className="font-medium text-sm text-primary">
+          <Badge variant="outline" className="capitalize">
             {isLoading ? "..." : topProduct.category}
-          </div>
+          </Badge>
         </CardFooter>
       </Card>
 
       {/* Top Category Card */}
-      <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-chart-3/2 to-white shadow-sm shadow-chart-3/5 dark:from-chart-3/3 dark:to-card dark:shadow-chart-3/3">
+      <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-primary/2 to-white shadow-sm shadow-primary/5 dark:from-primary/3 dark:to-card dark:shadow-primary/3">
         <CardHeader className="pb-0 pt-5">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-sm font-medium text-primary">
+            <CardDescription className="text-sm font-medium text-primary flex items-center gap-1.5">
               Top Product Category
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Category with highest stock levels</p>
+                </TooltipContent>
+              </Tooltip>
             </CardDescription>
             <div className="rounded-full bg-accent p-2 text-chart-3">
               <IconHanger className="size-6" stroke={2} />
             </div>
           </div>
-          <CardTitle className="mt-2 text-3xl font-semibold tracking-tight">
-            {isLoading ? "Loading..." : topCategory.category}
+          <CardTitle className="mt-2 text-3xl font-semibold tracking-tight text-chart-3/90">
+            {isLoading ? (
+              <span className="animate-pulse">Loading...</span>
+            ) : (
+              topCategory.category
+            )}
           </CardTitle>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between pb-5 pt-4">
-          <div className="text-sm text-primary">
-            {isLoading
-              ? "Calculating..."
-              : `${topCategory.stock} units in stock`}
+        <Separator className="my-2" />
+        <CardFooter className="flex items-center justify-between pb-5 pt-2">
+          <div className="flex items-center gap-2">
+            {!isLoading && (
+              <Badge
+                variant={getStockBadgeVariant(topCategory.stock)}
+                className={cn(
+                  "font-mono",
+                  getStockBadgeClasses(topCategory.stock)
+                )}
+              >
+                {getStockStatusIcon(topCategory.stock)}
+                {topCategory.stock} units
+              </Badge>
+            )}
           </div>
-          <div className="flex items-center gap-1 text-sm font-medium text-primary">
-            <IconTrendingUp className="size-4" />
-            <span>Popular</span>
-          </div>
+          <Badge variant="outline" className="bg-chart-3/5  text-primary">
+            <IconTrendingUp className="size-3 mr-1" />
+            Popular
+          </Badge>
         </CardFooter>
       </Card>
 
       {/* Top Color Card */}
-      <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-chart-2/2 to-white shadow-sm shadow-chart-2/5 dark:from-chart-2/3 dark:to-card dark:shadow-chart-2/3">
+      <Card className="overflow-hidden border-none rounded-xl bg-gradient-to-t from-primary/2 to-white shadow-sm shadow-primary/5 dark:from-primary/3 dark:to-card dark:shadow-primary/3">
         <CardHeader className="pb-0 pt-5">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-sm font-medium text-primary">
+            <CardDescription className="text-sm font-medium text-primary flex items-center gap-1.5">
               Most Popular Color
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Color used in most products</p>
+                </TooltipContent>
+              </Tooltip>
             </CardDescription>
             <div className="rounded-full bg-accent p-2 text-chart-2">
               <IconColorSwatch className="size-6" stroke={2} />
             </div>
           </div>
-          <CardTitle className="mt-2 text-3xl font-semibold tracking-tight">
-            {isLoading ? "Loading..." : topColor.color}
+          <CardTitle className="mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight text-chart-2/90">
+            {isLoading ? (
+              <span className="animate-pulse">Loading...</span>
+            ) : (
+              <>
+                <div
+                  className="size-10 rounded-full border border-muted"
+                  style={{ backgroundColor: getColorHex(topColor.color) }}
+                />
+                {topColor.color}
+              </>
+            )}
           </CardTitle>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between pb-5 pt-4">
-          <div className="text-sm text-primary">
-            {isLoading
-              ? "Analyzing..."
-              : `$${topColor.averagePrice.toFixed(2)} avg price`}
-          </div>
-          <div className="text-sm font-medium text-primary">
-            {isLoading ? "..." : `${topColor.count} products`}
-          </div>
+        <Separator className="my-2" />
+        <CardFooter className="flex flex-wrap items-center justify-between pb-5 pt-2 gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className="bg-chart-2/5 text-chart-2">
+                <IconCashBanknote className="size-3 mr-1" />$
+                {topColor.averagePrice.toFixed(2)} avg
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Average price of products with this color</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className="bg-chart-2/5 text-chart-2">
+                <IconShirt className="size-3 mr-1" />
+                {topColor.count} products
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Number of products using this color</p>
+            </TooltipContent>
+          </Tooltip>
         </CardFooter>
       </Card>
     </div>
   );
+}
+
+// Helper function to get a hex color from color name
+function getColorHex(colorName: number | string) {
+  const colorMap: string | number = {
+    "Persian Pink": "#F77FBE",
+    Beige: "#F5F5DC",
+    "Medium Slate Blue": "#7B68EE",
+    "Pale Azure": "#77C3EC",
+    Emerald: "#50C878",
+    Black: "#000000",
+  };
+
+  return colorMap[colorName] || "#CCCCCC";
 }
