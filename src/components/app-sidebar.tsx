@@ -37,7 +37,7 @@ import {
 
 const data = {
   user: {
-    name: "Moncq Administrator",
+    name: "moncq Administrator",
     email: "admin@moncq.com",
     avatar: "/avatars/moncq.jpeg",
   },
@@ -160,7 +160,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     className="h-full w-full object-cover"
                   />
                 </Avatar>
-                <span className="text-base font-semibold">Moncq</span>
+                <span className="text-base font-semibold">moncq</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
