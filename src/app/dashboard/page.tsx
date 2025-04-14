@@ -5,8 +5,6 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProductDataTable } from "@/components/data-table";
 
-import data from "./data.json";
-
 export default function Dashboard() {
   return (
     <SidebarProvider
