@@ -256,7 +256,7 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card overflow-hidden border-none rounded-xl bg-gradient-to-b from-background to-background/50 shadow-sm">
       <CardHeader>
-        <CardTitle>Fashion Collection Analytics</CardTitle>
+        <CardTitle>Product Analytics</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
             {metricType === "stock"

@@ -50,7 +50,7 @@ export function SiteHeader() {
             ) : (
               /* Placeholder with same dimensions for initial render */
               <div className="h-5 w-5" />
-            )}
+          )}
             <span className="sr-only">Toggle theme</span>
           </Button>
 

@@ -117,11 +117,6 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
-    {
       title: "Help",
       url: "/help",
       icon: IconHelp,

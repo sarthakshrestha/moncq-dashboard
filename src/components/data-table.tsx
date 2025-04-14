@@ -837,8 +837,9 @@ export function ProductDataTable() {
 
       {/* NEW: Category tabs instead of dropdown */}
       {/* Responsive Category Filter */}
+      {/* Responsive Category Filter */}
       <div className="px-4 lg:px-6 max-w-3xl flex-col justify-end">
-        <div className="text-xs text-muted-foreground mb-1">
+        <div className="text-xs text-muted-foreground mb-1 font-medium">
           Filter by Category
         </div>
 
@@ -856,19 +857,26 @@ export function ProductDataTable() {
               setSelectedCategory(value);
             }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full border-2 dark:border-slate-700 dark:bg-slate-900/70 dark:text-white shadow-sm">
               <SelectValue
                 placeholder={
                   selectedCategory === "all"
                     ? "All Categories"
                     : selectedCategory
                 }
+                className="font-medium"
               />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+            <SelectContent className="dark:bg-slate-900 dark:border-slate-700">
+              <SelectItem value="all" className="dark:focus:bg-slate-800">
+                All Categories
+              </SelectItem>
               {categories.map((category) => (
-                <SelectItem key={category} value={category}>
+                <SelectItem
+                  key={category}
+                  value={category}
+                  className="dark:focus:bg-slate-800"
+                >
                   {category}
                 </SelectItem>
               ))}
@@ -887,10 +895,19 @@ export function ProductDataTable() {
               setSelectedCategory(value);
             }}
           >
-            <TabsList className="w-full justify-start flex-wrap">
-              <TabsTrigger value="all">All Categories</TabsTrigger>
+            <TabsList className="w-full justify-start flex-wrap dark:bg-zinc-900/70 dark:border dark:border-zinc-700 p-1">
+              <TabsTrigger
+                value="all"
+                className="dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground dark:text-slate-200 dark:hover:bg-slate-800/70"
+              >
+                All Categories
+              </TabsTrigger>
               {categories.map((category) => (
-                <TabsTrigger key={category} value={category}>
+                <TabsTrigger
+                  key={category}
+                  value={category}
+                  className="dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground dark:text-slate-200 dark:hover:bg-zinc-800/70"
+                >
                   {category}
                 </TabsTrigger>
               ))}

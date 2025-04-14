@@ -96,7 +96,7 @@ export function SectionCards() {
   };
 
   // Get status icon based on stock level
-  const getStockStatusIcon = (stock) => {
+  const getStockStatusIcon = (stock: number) => {
     if (stock >= 100) return <IconCircleCheck className="size-3.5 mr-1" />;
     if (stock >= 50) return <IconAlertTriangle className="size-3.5 mr-1" />;
     return <IconAlertTriangle className="size-3.5 mr-1" />;
@@ -172,7 +172,7 @@ export function SectionCards() {
               Top Selling Product
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                  <IconInfoCircle className="size-3.5 text-primary cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Product with highest stock level</p>
@@ -214,7 +214,7 @@ export function SectionCards() {
               </Badge>
             )}
           </div>
-          <Badge variant="outline" className="capitalize">
+          <Badge variant="outline" className="capitalize text-primary">
             {isLoading ? "..." : topProduct.category}
           </Badge>
         </CardFooter>
@@ -228,18 +228,18 @@ export function SectionCards() {
               Top Product Category
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                  <IconInfoCircle className="size-3.5 text-primary cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Category with highest stock levels</p>
                 </TooltipContent>
               </Tooltip>
             </CardDescription>
-            <div className="rounded-full bg-accent p-2 text-chart-3">
+            <div className="rounded-full bg-accent p-2 text-primary">
               <IconHanger className="size-6" stroke={2} />
             </div>
           </div>
-          <CardTitle className="mt-2 text-3xl font-semibold tracking-tight text-chart-3/90">
+          <CardTitle className="mt-2 text-3xl font-semibold tracking-tight ">
             {isLoading ? (
               <span className="animate-pulse">Loading...</span>
             ) : (
@@ -278,18 +278,18 @@ export function SectionCards() {
               Most Popular Color
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <IconInfoCircle className="size-3.5 text-muted-foreground cursor-help" />
+                  <IconInfoCircle className="size-3.5 text-primary cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Color used in most products</p>
                 </TooltipContent>
               </Tooltip>
             </CardDescription>
-            <div className="rounded-full bg-accent p-2 text-chart-2">
+            <div className="rounded-full bg-accent p-2 text-primary">
               <IconColorSwatch className="size-6" stroke={2} />
             </div>
           </div>
-          <CardTitle className="mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight text-chart-2/90">
+          <CardTitle className="mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight">
             {isLoading ? (
               <span className="animate-pulse">Loading...</span>
             ) : (
@@ -307,7 +307,7 @@ export function SectionCards() {
         <CardFooter className="flex flex-wrap items-center justify-between pb-5 pt-2 gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="outline" className="bg-chart-2/5 text-chart-2">
+              <Badge variant="outline" className="bg-chart-2/5 text-primary">
                 <IconCashBanknote className="size-3 mr-1" />$
                 {topColor.averagePrice.toFixed(2)} avg
               </Badge>
@@ -319,7 +319,7 @@ export function SectionCards() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="outline" className="bg-chart-2/5 text-chart-2">
+              <Badge variant="outline" className="bg-chart-2/5 text-primary">
                 <IconShirt className="size-3 mr-1" />
                 {topColor.count} products
               </Badge>
@@ -335,8 +335,8 @@ export function SectionCards() {
 }
 
 // Helper function to get a hex color from color name
-function getColorHex(colorName: number | string) {
-  const colorMap: string | number = {
+function getColorHex(colorName: number | string): string {
+  const colorMap: Record<string, string> = {
     "Persian Pink": "#F77FBE",
     Beige: "#F5F5DC",
     "Medium Slate Blue": "#7B68EE",
@@ -345,5 +345,7 @@ function getColorHex(colorName: number | string) {
     Black: "#000000",
   };
 
-  return colorMap[colorName] || "#CCCCCC";
+  // Convert number to string if needed before lookup
+  const key = typeof colorName === "number" ? colorName.toString() : colorName;
+  return colorMap[key] || "#CCCCCC";
 }
