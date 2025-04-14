@@ -144,7 +144,10 @@ export function SectionCards() {
         </CardHeader>
         <Separator className="my-2" />
         <CardFooter className="flex items-center justify-between pb-5 pt-2">
-          <Badge variant="outline" className="font-normal text-primary">
+          <Badge
+            variant="outline"
+            className="font-normal bg-chart-3/5 text-primary"
+          >
             {isLoading ? "Calculating..." : "Current Stock Value"}
           </Badge>
           <Tooltip>
@@ -205,7 +208,7 @@ export function SectionCards() {
               <Badge
                 variant={getStockBadgeVariant(topProduct.stock)}
                 className={cn(
-                  "font-mono",
+                  "font-mono ",
                   getStockBadgeClasses(topProduct.stock)
                 )}
               >
@@ -214,7 +217,10 @@ export function SectionCards() {
               </Badge>
             )}
           </div>
-          <Badge variant="outline" className="capitalize text-primary">
+          <Badge
+            variant="outline"
+            className="capitalize bg-chart-3/5 text-primary"
+          >
             {isLoading ? "..." : topProduct.category}
           </Badge>
         </CardFooter>
@@ -295,7 +301,7 @@ export function SectionCards() {
             ) : (
               <>
                 <div
-                  className="size-10 rounded-full border border-muted"
+                  className="size-10 rounded-full border border-zinc-900"
                   style={{ backgroundColor: getColorHex(topColor.color) }}
                 />
                 {topColor.color}
@@ -307,7 +313,10 @@ export function SectionCards() {
         <CardFooter className="flex flex-wrap items-center justify-between pb-5 pt-2 gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant="outline" className="bg-chart-2/5 text-primary">
+              <Badge
+                variant="outline"
+                className="bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400"
+              >
                 <IconCashBanknote className="size-3 mr-1" />$
                 {topColor.averagePrice.toFixed(2)} avg
               </Badge>
