@@ -833,44 +833,10 @@ export function ProductDataTable() {
             />
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          {/* Toggle Category Metrics Visualization with console logs */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="hidden md:flex"
-            onClick={() => {
-              console.log(
-                "Toggling metrics visibility from",
-                showCategoryMetrics,
-                "to",
-                !showCategoryMetrics
-              );
-              setShowCategoryMetrics(!showCategoryMetrics);
-            }}
-          >
-            <IconChartBar className="mr-1 h-4 w-4" />
-            {showCategoryMetrics ? "Hide Metrics" : "Show Metrics"}
-          </Button>
-
-          {/* Collection Tabs */}
-          <div className="space-y-1">
-            <div className="text-xs text-muted-foreground hidden md:block">
-              Collections
-            </div>
-            <TabsList className="**:data-[slot=badge]:bg-muted-foreground/30 **:data-[slot=badge]:size-5 **:data-[slot=badge]:rounded-full **:data-[slot=badge]:px-1 @4xl/main:flex">
-              <TabsTrigger value="all">All Collections</TabsTrigger>
-              <TabsTrigger value="oversized">Oversized</TabsTrigger>
-              <TabsTrigger value="fitted">Fitted</TabsTrigger>
-              <TabsTrigger value="classic">Classic</TabsTrigger>
-            </TabsList>
-          </div>
-        </div>
       </div>
 
       {/* NEW: Category tabs instead of dropdown */}
-      <div className="px-4 lg:px-6">
+      <div className="px-4 lg:px-6 max-w-3xl flex-col justify-end">
         <div className="text-xs text-muted-foreground mb-1">
           Filter by Category
         </div>
